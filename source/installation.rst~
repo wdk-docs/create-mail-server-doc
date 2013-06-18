@@ -1,0 +1,79 @@
+安装
+============
+
+分布
+--------------
+This section is different for every distribution and for every version.
+
+This howto is based on Ubuntu and its base of debian which uses apt-get. Therefore this section uses apt packages to its fullest.
+
+For other installation method please refer to previous edition's software links and your own distribution for the documention for other ways of installing. My 2nd edition(outdated) has instructions for Mandriva, general RPM and tarball compiling.
+
+To follow the rest of this howto with another distrobution, you need to ensure all your packages have been installed with the same modules, E.g MySQL lookup on postfix and sasl, php in apache etc.
+
+I have set up mail servers using the 32bit and 64bit x86 platforms, and if all the packages are available then other, E.g. Mac platforms should work too.
+
+基本安装
+-----------
+
+With installing Ubuntu you have a choice of which base system to install. You may choose server or desktop image or very basic setups. I will assume a server install, but it should not differ.
+
+Or if you have chosen an ec2 based server, you can:
+
+* Base it on a Canonical image
+* Apply my ec2 Ubuntu server suggestions
+* Use my prebuilt ec2 public images for this postfix mail server
+
+.. note:: Please note that after a while Ill stop specifying the use of sudo, as it is up to yourselves if you use it or use a priviliged user, e.g. root. My advice is to use 'sudo'.
+
+仓库
+-------
+
+For assistance with repositories, refer to this article on ubuntu's wiki.
+
+A previous edition discussed repository configuration in more detail.
+
+But basically for this you need main and universe, and I also throw in the other "safe" ones: restricted and multiverse (and partner, when available).
+
+.. code-block:: sh
+
+   sudo vi /etc/apt/sources.list 
+   
+If main and universe already is listed, this is a quick find and replace to add the others all over:
+:%s/main un/main restricted multiverse un/g
+
+As mentioned in the previous edition you also might want to find a repository closer to your server.
+
+包
+----------
+
+You need to install a whole bunch of packages.	 We will install them bit by bit. But first check your package sources are correctly pointing to main multiverse restricted universe repositories of your current Ubuntu version.
+
+.. code-block:: sh
+
+   sudo vi /etc/apt/sources.list
+
+Secondly update your current system:
+
+.. code-block:: sh
+
+   sudo apt-get update
+   sudo apt-get upgrade
+   
+.. note:: aptitude is no longer supplied in the base install of Ubuntu. This is due to some concurrency issues. Some part of this document may still refer to aptitude. You should use the original apt-get instead.
+
+附加的软件包
+^^^^^^^^^^^^^^^^^^^^
+
+I also install a few other packages that I personally prefer. But nothing todo with the mail server.
+sudo aptitude install vim mutt lynx curl git
+
+包状态
+^^^^^^^^^^^^^^^^^^
+
+To find out which packages you may have installed, you can use for example:
+sudo dpkg --list | grep postfix
+or
+sudo aptitude search postfix
+EC2 Bundle
+My AMI flurdy-amis/ubuntu-mail-server-clean is based on Canonical's official Ubuntu with these basic mail server packages installed.

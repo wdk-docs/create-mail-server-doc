@@ -1,0 +1,11 @@
+mailman手册
+=================
+
+.. toctree::
+   :maxdepth: 2
+
+   member
+   administrators
+   site
+   sendmail
+   

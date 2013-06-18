@@ -1,0 +1,267 @@
+安全邮件服务器
+====================
+
+Stopping hackers, phishers, spammers, your boss and your neighbour from accessing your server or the traffic in between is important, and easily done.
+
+认证
+----------------
+
+Normal email traffic between clients and servers are in open plain text. That includes passwords and content of emails.
+
+SASL
+^^^^^^^
+
+SASL secures the actual authentication (login), by encoding the passwords so that it can not be easily intercepted. The rest of the emails are however in clear plain text.
+
+SASL can be a royal pain to set up, especially as it does not support storing encrypted passwords by default in Ubuntu. 
+
+Therefore my previous editions described how to configure SASL using plain text passwords in the database.
+
+Obviously this is not ideal, so there are ways to combine SASL and storing encrypted passwords. In the future the packages that comes with Ubuntu may support the password_format configuration option for SASL. But until then you can configure SASL to ask PAM to compare the passwords:
+
+安装
+
+.. code-block:: sh
+
+   sudo aptitude install libsasl2-modules libsasl2-modules-sql libgsasl7\
+				libauthen-sasl-cyrus-perl sasl2-bin libpam-mysql
+
+配置
+
+Enable postfix to access SASL files:
+
+.. code-block:: sh
+
+   sudo adduser postfix sasl
+
+Create sasl files accessibly even by chrooted Postfix:
+
+.. code-block:: sh
+
+   sudo mkdir -p /var/spool/postfix/var/run/saslauthd
+
+Add SASL configurations to Postfix:
+
+.. code-block:: sh
+
+   sudo vi /etc/postfix/main.cf
+
+.. code-block:: ini
+
+   # SASL
+   smtpd_sasl_auth_enable = yes
+   # If your potential clients use Outlook Express or other older clients
+   # this needs to be set to yes
+   broken_sasl_auth_clients = no
+   smtpd_sasl_security_options = noanonymous
+   smtpd_sasl_local_domain =
+   Modify these existing configurations:
+   # Add permit_sasl_authenticated to you existing  smtpd_sender_restrictions
+   smtpd_sender_restrictions = permit_sasl_authenticated, permit_mynetworks, 
+      warn_if_reject reject_non_fqdn_sender, reject_unknown_sender_domain,
+      reject_unauth_pipelining, permit
+   # Add permit_sasl_authenticated to you existing  smtpd_recipient_restrictions
+   smtpd_recipient_restrictions = reject_unauth_pipelining, permit_mynetworks, 
+      permit_sasl_authenticated, reject_non_fqdn_recipient, reject_unknown_recipient_domain, 
+      reject_unauth_destination, check_policy_service inet:127.0.0.1:10023, permit
+
+Change how SASLAUTHD is run:
+
+.. code-block:: sh
+
+   sudo vi /etc/default/saslauthd
+
+.. code-block:: ini
+
+   # Toggle this to yes
+   START=yes
+   # Switch this to be under postfix's spool
+   # And add -r so that the realm(domain) is part of the username
+   OPTIONS="-r -c -m /var/spool/postfix/var/run/saslauthd"
+
+Tell postfix how to interact with SASL:
+
+.. code-block:: sh
+
+   sudo vi /etc/postfix/sasl/smtpd.conf
+
+.. code-block:: ini
+
+   pwcheck_method: saslauthd
+   mech_list: plain login cram-md5 digest-md5
+   log_level: 7
+   allow_plaintext: true
+   auxprop_plugin: sql
+   sql_engine: mysql
+   sql_hostnames: 127.0.0.1
+   sql_user: mail
+   sql_passwd: mailPASSWORD
+   sql_database: maildb
+   sql_select: select crypt from users where id='%u@%r' and enabled = 1
+
+(When SASL is working you can remove the log_level line.) 
+
+.. note:: While sql_passw is the original parameter name (without the d), a more obvious sql_passwd will also work in later versions
+
+Tell the pam how to to authenticate smtp via mysql:
+
+.. code-block:: sh
+
+   sudo vi /etc/pam.d/smtp
+
+These must be on 2 lines only, but I have broken them up for easier to read.
+
+.. code-block:: ini
+
+   auth required pam_mysql.so user=mail passwd=aPASSWORD 
+			host=127.0.0.1 db=maildb table=users usercolumn=id passwdcolumn=crypt crypt=1
+   account sufficient pam_mysql.so user=mail passwd=aPASSWORD 
+			host=127.0.0.1 db=maildb table=users usercolumn=id passwdcolumn=crypt crypt=1
+
+In addition to tailing var/log/mail.log and /var/log/mysql/mysql.log it is quite usefull to tail the auth.log as well when testing SASL.
+
+.. code-block:: sh
+
+   tail -f /var/log/auth.log
+
+Restart postfix and saslauthd to enable SASL for sending emails.
+
+.. code-block:: sh
+
+   sudo /etc/init.d/saslauthd restart
+   sudo /etc/init.d/postfix restart
+
+Imap SASL / Courier
+
+I tend not to have SASL for my courier authentication, as I enforce TLS for all my clients. 
+
+However if you have a more lenient access policy which is wise if you have many users, then you may want SASL in Courier as well:
+
+.. code-block:: sh
+
+   sudo vi /etc/courier/imapd
+
+This may already be avaiable as a commented out line. If not replace the current line by adding UTH=CRAM-MD5 AUTH=CRAM-SHA1 so it resembles something like this: (Again on one line)
+
+.. code-block:: ini
+
+   IMAP_CAPABILITY="IMAP4rev1 UIDPLUS CHILDREN NAMESPACE 
+			THREAD=ORDEREDSUBJECT THREAD=REFERENCES SORT QUOTA AUTH=CRAM-MD5 AUTH=CRAM-SHA1 IDLE"
+
+.. code-block:: sh
+
+   sudo /etc/init.d/courier-authdaemon restart;
+   sudo /etc/init.d/courier-imap restart
+
+
+
+加密
+-----------
+
+TLS
+^^^^
+
+Encrypting the traffic stops anyone else listening in on your email communications. And is very recommended. There are different types of communication to encrypt: The data traffic between your email applications and the server when you read emails or when you send emails, and communication between other email servers and your server.
+
+For the encryption of reading emails, it is Courier you need to configure. For sending, and beetwen server encryption it is Postfix.
+
+TLS in Postfix
+
+To encrypt you need certificates. Ubuntu creates some for you for which you can use while setting up the server. However before you go live, it is recommended to create your own with your proper domain name etc. Please refer to previous edition for more detail.
+
+.. code-block:: sh
+
+   vi /etc/postfix/main.cf
+
+There are already some TLS settings in the default debian/ubuntu version of this file. I moved these to the end, for clarity, but that is up to you.
+
+.. code-block:: ini
+
+   # TLS parameters
+   # smtp_use_tls = no
+   smtp_tls_security_level = may
+   # smtpd_use_tls=yes
+   smtpd_tls_security_level = may
+   # smtpd_tls_auth_only = no
+   smtp_tls_note_starttls_offer = yes
+   smtpd_tls_loglevel = 1
+   smtpd_tls_received_header = yes
+   smtpd_tls_session_cache_timeout = 3600s
+   tls_random_source = dev:/dev/urandom
+   smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+   smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+   # smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+   # smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+   smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
+
+Next we have a look at the master.cf file.
+
+.. code-block:: sh
+
+   vi /etc/postfix/master.cf
+
+By default only the normal smtp service is enabled, which is fine. But I prefer to enable submission (port 587), so that clients can use it, and I can restrict them to TLS only. Also enabled smtps service (port 465), for some compatebility with some older clients (outlook express etc).
+
+.. code-block:: ini
+
+   submission inet n       -       n       -       -       smtpd
+     -o smtpd_sasl_auth_enable=yes
+   # if you do not want to restrict it encryption only, comment out next line<
+     -o smtpd_tls_auth_only=yes
+   # -o smtpd_tls_security_level=encrypt
+   #  -o header_checks=
+   #  -o body_checks=<
+     -o smtpd_client_restrictions=permit_sasl_authenticated,reject_unauth_destination,reject
+     -o smtpd_sasl_security_options=noanonymous,noplaintext
+     -o smtpd_sasl_tls_security_options=noanonymous
+   # -o milter_macro_daemon_name=ORIGINATING<
+   smtps     inet  n       -       -       -       -       smtpd
+     -o smtpd_tls_wrappermode=yes
+     -o smtpd_sasl_auth_enable=yes 
+     -o smtpd_tls_auth_only=yes
+     -o smtpd_client_restrictions=permit_sasl_authenticated,reject
+     -o smtpd_sasl_security_options=noanonymous,noplaintext
+     -o smtpd_sasl_tls_security_options=noanonymous
+   #  -o milter_macro_daemon_name=ORIGINATING
+
+TLS in Courier
+
+Again Ubuntu has created a certificate for you, but if you want to create your own, especially for a properly named server, then do this.
+
+.. code-block:: sh
+
+   cd /etc/courier
+   openssl req -x509 -newkey rsa:1024 -keyout imapd.pem \ 
+     -out imapd.pem -nodes -days 999
+  
+For more details review an earlier edition.
+
+Then you need to edit
+
+.. code-block:: sh
+
+   vi /etc/courier/imapd-ssl
+
+By default Ubuntu already points to you certificate
+
+.. code-block:: ini
+
+   TLS_CERTFILE=/etc/courier/imapd.pem
+
+Modify this if needed.
+
+Also you if want to restrict IMAP users to SSL/TLS only toggle this setting to 1.
+
+.. code-block:: ini
+
+   IMAP_TLS_REQUIRED=1
+
+For maximum compatability it is not wise to restrict to TLS only for the traffic between servers. As this means not all valid emails sent by others can reach your server. However enabling them the option to encrypt is a good idea.
+
+Be aware that the emails are not encrypted on your machine, nor on the server. For this type of client encryption, please refer to previous edition for more on GnuPG.
+
+In some situations SASL and TLS do not play well together. Those situations are in combinations of storing encrypted passwords, using MD5 authentication over encrypted traffic. I recommend, insisting on TLS traffic with your authenticating clients, which then negates the need for SASL.
+
+You know have an advanced secure mail server. Now is another good point to test the set up so far and to insert some data in the db.
+
+Ive created an EC2 bundle for this stage: flurdy-amis/ubuntu-mail-server-secure.

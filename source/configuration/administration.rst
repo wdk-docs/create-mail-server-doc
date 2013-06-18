@@ -1,0 +1,52 @@
+管理
+==================
+
+启用Web访问
+------------------
+
+You may need to enable web access in the firewall. Check the firewall configuration if this neccessary.
+
+安装 phpmyadmin
+--------------------
+
+.. code-block:: sh
+
+   sudo aptitude install phpmyadmin
+   
+Enter Yes to set it up, enter root mysql password, enter a phpmyadmin mysql user password twice. Accept apache2 as the web server.
+
+You may choose to restrict phpMyAdmin to a spefic virtual host. If so you need to, edit
+
+.. code-block:: sh
+
+   sudo vi /etc/apache2/conf.d/phpmyadmin.conf
+   
+and comment out the alias.
+
+.. code-block:: apache
+
+   #Alias /phpmyadmin /usr/share/phpmyadmin
+   
+And insert the alias instead into a virtual host configuration in /etc/apache2/sites-available/. For this example we are not, and for testing we keep the Alias uncommented.
+
+Reload apache to activate changes. First test if ok.
+
+.. code-block:: sh
+
+   sudo apache2ctl -t
+   
+Then reload it.
+
+.. code-block:: sh
+
+   sudo /etc/init.d/apache2 reload
+   
+You can now go to http://yourdomain.com/phpmyadmin/, and login with the mail user. You can use it as it is, but I recommend securing it a bit more.
+
+One simple way is adding apache's .htaccess login requirement.
+
+Further restrictions can be restricting to a specific virtual host. Or renaming the folder. Purely ubfuscating, but simple.
+
+Or using the example in the webmail section, and adding SSL requirement to the connection. Or disabel mysql root's access via phpMyAdmin.
+
+Please refer to previous edition for example on htaccess, and mysql user restriction.
