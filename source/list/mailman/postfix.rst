@@ -79,15 +79,19 @@ Let's assume you have several domains (in this case example1.com and example2.ne
       flags=FR user=list argv=/usr/lib/mailman/bin/postfix-to-mailman.py
       ${nexthop} ${user}
 
-#. 保存和关闭 *master.cf*. 打开你的运输文件. By default, this file should be located within the same directory as your main.cf and master.cf files. Add the following lines:
+#. 保存和关闭 *master.cf*. 打开你的 *transport* 文件. By default, this file should be located within the same directory as your main.cf and master.cf files. Add the following lines:
 
    .. code-block:: python
 
       example1.com   mailman:
       example2.net   mailman:
 
-#. 运行 **postmap -v** on the transport file.
+#. 在 *transport* 文件运行 **postmap -v**.
 
-#. 重启 mailman 和 postfix
+   .. code-block:: sh
+
+      postmap -v /etc/postfix/transport
+
+#. 重启 **mailman** 和 **postfix**
 
 在web界面不能创建列表. 新列表必须使用命令 **$prefix/bin/newlist**.
