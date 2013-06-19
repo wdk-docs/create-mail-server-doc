@@ -57,27 +57,32 @@ You are now ready to configure and install the Mailman software.
 
 Before you can install Mailman, you must run configure to set various installation options your system might need.
 
-Note: Take special note of the --with-mail-gid and --with-cgi-gid options below. You will probably need to use these.
+.. Note:: Take special note of the --with-mail-gid and --with-cgi-gid options below. You will probably need to use these.
+
 You should not be root while performing the steps in this section. Do them under your own login, or whatever account you typically use to install software. You do not need to do these steps as user mailman, but you could. However, make sure that the login used is a member of the mailman group as that that group has write permissions to the $prefix directory made in the previous step. You must also have permission to create a setgid file in the file system where it resides (NFS and other mounts can be configured to inhibit setgid settings).
 
 If you've installed other GNU software, you should be familiar with the configure script. Usually you can just cd to the directory you unpacked the Mailman source tarball into, and run configure with no arguments:
 
 .. code-block:: bash
 
-  % cd mailman-<version>
-  % ./configure
-  % make install
-  
-The following options allow you to customize your Mailman installation.
+   % cd mailman-<version>
+   % ./configure
+   % make install
+
+以下选项允许你自定义你的mailman安装:
 
 * --prefix=dir
  Standard GNU configure option which changes the base directory that Mailman is installed into. By default $prefix is /usr/local/mailman. This directory must already exist, and be set up as described in 2.2.
+
 * --exec-prefix=dir
  Standard GNU configure option which lets you specify a different installation directory for architecture dependent binaries.
+
 * --with-var-prefix=dir
  Store mutable data under dir instead of under the $prefix or $exec_prefix. Examples of such data include the list archives and list settings database.
+
 * --with-python=/path/to/python
  Specify an alternative Python interpreter to use for the wrapper programs. The default is to use the interpreter found first on your shell's $PATH.
+
 * --with-username=username-or-uid
  Specify a different username than mailman. The value of this option can be an integer user id or a user name. Be sure your $prefix directory is owned by this user.
 * --with-groupname=groupname-or-gid
