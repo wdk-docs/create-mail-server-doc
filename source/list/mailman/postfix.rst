@@ -35,7 +35,7 @@ postfix与虚拟域名集成（哈希映射）
 
 Let's assume you have several domains (in this case example1.com and example2.net) and you plan on hosting mailman on lists.example1.com and lists.example2.net.  You will have to select a default domain you want to host mailman on.  It doesn't really matter which one you choose but remember that it will be the one where everyone will come to administer their lists.  In this case, I will select lists.example1.com
 
-#. 在 *$prefix/Mailman/mmcfg.py* 文件里, 在 *MTA* 那行下添加以下行:
+#. 在 *$prefix/Mailman/mm_cfg.py* 文件里, 在 *MTA* 那行下添加以下行:
 
    .. code-block:: python
 
@@ -53,7 +53,7 @@ Let's assume you have several domains (in this case example1.com and example2.ne
       # Default host for web interface of newly created MLs
       DEFAULT_URL_HOST   = 'lists.mikesoh.com'
 
-#. 保存关闭 *mmcfg.py* 并运行 **$prefix/bin/genaliases**, taking care to make sure that the resulting alias files are readable by postfix.
+#. 保存关闭 *mm_cfg.py* 并运行 **$prefix/bin/genaliases**, taking care to make sure that the resulting alias files are readable by postfix.
 
 #. 修改 **postfix** 配置，包含 mailman 别名.  在 *main.cf* 里, 添加别名文件:
 

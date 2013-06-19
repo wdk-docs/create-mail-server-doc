@@ -884,13 +884,13 @@ For Unixes that don't support chkconfig, you might try the following set of comm
 检测主机名
 ----------------------------------------
 
-You should check the values for DEFAULT_EMAIL_HOST and DEFAULT_URL_HOST in Defaults.py. Make any necessary changes in the mm_cfg.py file, not in the Defaults.py file. If you change either of these two values, you'll want to add the following afterwards in the mm_cfg.py file:
+你必须检查 *Defaults.py* 里的 DEFAULT_EMAIL_HOST 和 DEFAULT_URL_HOST. 在 *mm_cfg.py* 里修改, 不要在 *Defaults.py* 里. 如果你修改他们中的任何值, 需要在 *mm_cfg.py* 添加一下内容:
 
 .. code-block:: python
 
     add_virtualhost(DEFAULT_URL_HOST, DEFAULT_EMAIL_HOST)
 
-You will want to run the bin/fix_url.py to change the domain of any existing lists.
+需要运行 bin/fix_url.py 修改已存在列表的域.
 
 
 创建站点密码
