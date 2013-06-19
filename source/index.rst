@@ -22,7 +22,7 @@
    ec2
    appendix
    list/index
-
+   term/verb
 
 Indices and tables
 ==================

@@ -116,22 +116,22 @@ If you've installed other GNU software, you should be familiar with the configur
 制作和安装
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Once you've run configure, you can simply run make, then make install to build and install Mailman.
+一旦你运行完 **configure**, 你可以很简单的运行 **make**, 然后运行 **make install** 来创建和安装 Mailman.
 
 检测安装
 -----------------------------
 
-After you've run make install, you should check that your installation has all the correct permissions and group ownerships by running the check_perms script. First change to the installation (i.e. $prefix) directory, then run the bin/check_perms program. Don't try to run bin/check_perms from the source directory; it will only run from the installation directory.
+After you've run make install, you should check that your installation has all the correct permissions and group ownerships by running the **check_perms** script. First change to the installation (i.e. $prefix) directory, then run the bin/check_perms program. Don't try to run bin/check_perms from the source directory; it will only run from the installation directory.
 
 If this reports no problems, then it's very likely <wink> that your installation is set up correctly. If it reports problems, then you can either fix them manually, re-run the installation, or use bin/check_perms to fix the problems (probably the easiest solution):
 
 * You need to become the user that did the installation, and that owns all the files in $prefix, or root.
 * Run bin/check_perms -f
-* Repeat previous step until no more errors are reported!
+* 重复以上步骤直到没有错误报出!
 
 .. Warning::
 
-   If you're running Mailman on a shared multiuser system, and you have mailing lists with private archives, you may want to hide the private archive directory from other users on your system. In that case, you should drop the other execute permission (o-x) from the archives/private directory. However, the web server process must be able to follow the symbolic link in public directory, otherwise your public Pipermail archives will not work. To set this up, become root and run the following commands:
+   如果你在一个多用户共享的系统里运行Mailman, 并且你有私人文档的邮件列表, 你想在你的系统中隐藏私人文件夹，不让其他人访问. 在那个案例中, 你必须从私人文件夹中删除其他用户的执行权限 (o-x). However, the web server process must be able to follow the symbolic link in public directory, otherwise your public Pipermail archives will not work. To set this up, become root and run the following commands:
 
    .. code-block:: bash
 
@@ -145,7 +145,7 @@ If this reports no problems, then it's very likely <wink> that your installation
 设置web服务器
 ------------------------------
 
-Congratulations! You've installed the Mailman software. To get everything running you need to hook Mailman up to both your web server and your mail system.
+恭喜! 你已经安装Mailman软件. To get everything running you need to hook Mailman up to both your web server and your mail system.
 
 If you plan on running your mail and web servers on different machines, sharing Mailman installations via NFS, be sure that the clocks on those two machines are synchronized closely. You might take a look at the file Mailman/LockFile.py; the constant CLOCK_SLOP helps the locking mechanism compensate for clock skew in this type of environment.
 
