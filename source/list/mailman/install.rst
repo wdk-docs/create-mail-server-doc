@@ -85,25 +85,33 @@ If you've installed other GNU software, you should be familiar with the configur
 
 * --with-username=username-or-uid
  Specify a different username than mailman. The value of this option can be an integer user id or a user name. Be sure your $prefix directory is owned by this user.
+
 * --with-groupname=groupname-or-gid
  Specify a different groupname than mailman. The value of this option can be an integer group id or a group name. Be sure your $prefix directory is group-owned by this group.
+
 * --with-mail-gid=group-or-groups
  Specify an alternative group for running scripts via the mail wrapper. group-or-groups can be a list of one or more integer group ids or symbolic group names. The first value in the list that resolves to an existing group is used. By default, the value is the list mailman, other, mail, and daemon.
 
-.. Note:: This is highly system dependent and you must get this right, because the group id is compiled into the mail wrapper program for added security. On systems using sendmail, the sendmail.cf configuration file designates the group id of sendmail processes using the DefaultUser option. (If commented out, it still may be indicating the default...)
+   .. note:: This is highly system dependent and you must get this right, because the group id is compiled into the mail wrapper program for added security. On systems using sendmail, the sendmail.cf configuration file designates the group id of sendmail processes using the DefaultUser option. (If commented out, it still may be indicating the default...)
  Check your mail server's documentation and configuration files to find the right value for this switch.
+
 * --with-cgi-gid=group-or-groups
  Specify an alternative group for running scripts via the CGI wrapper. group-or-groups can be a list of one or more integer group ids or symbolic group names. The first value in the list that resolves to an existing group is used. By default, the value is the the list www, www-data, and nobody.
-.. Note:: The proper value for this is dependent on your web server configuration. You must get this right, because the group id is compiled into the CGI wrapper program for added security, and no Mailman CGI scripts will run if this is incorrect.
+
+   .. note:: The proper value for this is dependent on your web server configuration. You must get this right, because the group id is compiled into the CGI wrapper program for added security, and no Mailman CGI scripts will run if this is incorrect.
  If you're using Apache, check the values for the Group option in your httpd.conf file.
+
 * --with-cgi-ext=extension
  Specify an extension for cgi-bin programs. The CGI wrappers placed in $prefix/cgi-bin will have this extension (some web servers require an extension). extension must include the leading dot.
+
 * --with-mailhost=hostname
  Specify the fully qualified host name part for outgoing email. After the installation is complete, this value can be overriden in $prefix/Mailman/mm_cfg.py.
+
 * --with-urlhost=hostname
  Specify the fully qualified host name part of urls. After the installation is complete, this value can be overriden in $prefix/Mailman/mm_cfg.py.
+
 * --with-gcc=no
- Don't use gcc, even if it is found. In this case, cc must be found on your $PATH.
+ 不使用gcc, 即使找到它. 本文, cc 必须能在你的 $PATH 里找到.
 
 制作和安装
 ^^^^^^^^^^^^^^^^^^^^^^^^^
