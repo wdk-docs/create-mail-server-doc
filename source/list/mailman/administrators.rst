@@ -1,7 +1,7 @@
 管理手册
 ================
 
-Introduction
+介绍
 ------------------
 
 This is one of a set of three documents for the various people involved in running and using a mailing list. For the members of mailing lists (the subscribers), we have the Mailman 2.1 Members Manual which covers things like subscribing and unsubscribing. For the people who install and set up Mailman, we will eventually have the Mailman 2.1 Site Administration Manual, which has not yet been written.
@@ -10,7 +10,7 @@ This document covers the people who run mailing lists: the list administrators (
 
 This document does not need to be read in order, so if you just want an answer to a specific question, jump to the appropriate place and references to other sections will be provided when necessary or potentially helpful.
 
-Acknowledgements
+致谢
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 The bulk of this document has been written by Terri Oda. Terri used to get a lot of spam, so she did research into neat evolutionary anti-spam solutions. And then she thought it would be nice if her grandfather could use the web without worrying about bad stuff getting into his computer, so she started doing web security. All of this is a roundabout way of saying that her day job is as a security researcher, and she actually doesn't consider herself a document writer, but she was tired of Mailman not having documentation so she figured it was time to do something about it.
@@ -19,15 +19,15 @@ The original site admin docs were written by Barry Warsaw. Thanks also go to the
 
 This document is now stored in the Mailman wiki http://wiki.list.org, and may be edited and added to by members of the Mailman community. Please see the wiki changelogs for more information.
 
-Mailman's interfaces
+Mailman's 界面
 -----------------------
-Mailman has 3 interfaces:
+Mailman有3个界面:
 
-The web interface – used by most people, this is the main interface most users will see
-The email interface – used as an alternative to the web interface
-The command line interface – used mostly by site admins, this is very powerful but perhaps not so user-friendly
+* Web界面 – used by most people, this is the main interface most users will see
+* email界面 – used as an alternative to the web interface
+* 命令行界面 – used mostly by site admins, this is very powerful but perhaps not so user-friendly
 
-The web interface
+Web界面
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 The most commonly used interface of Mailman is the web interface. Almost all the options can be set from this interface, and it also provides inline help and descriptions of each option. More importantly, the day-to-day tasks of running a mailing list are handed through this interface.
@@ -46,7 +46,7 @@ The web domain (WEBSERVER) can't be set from the web, since it's a bit too easy 
 bin/withlist -l -r fix_url listname [options]
 In many cases, this is the only interface a list administrator will use, and may be the only interface the list administrator has permissions to use.
 
-The email interface
+email界面
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 There is also an email interface for Mailman, allowing list admins to adjust settings or handle caught messages without requiring them to open up a web browser.
@@ -54,7 +54,7 @@ There is also an email interface for Mailman, allowing list admins to adjust set
 	
 Since this interface is not as commonly used as the web interface, it is highly likely that this part of the documentation will be among the last pieces written. If you wish to speed this up, please feel free to help fill it in!
 
-Moderation
+适度
 -----------------
 
 The web interface for moderation can be found at a URL similar to the following, depending on your mailman config:
@@ -63,7 +63,7 @@ http://WEBSERVER/mailman/admindb/LISTNAME
 
 From here, you will see a list of anything awaiting your decision. This is largely messages that have been caught for some reason, but may also include subscription/unsubscription requests if you require admin authorization before someone can join or leave the list.
 
-Why do I have to authorize these messages?
+为什么我要授权这些消息?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Messages are "caught" in the moderation queue depending upon your list settings. There are a number of rules that allow you to choose which messages require moderation, but basically you want things which might be inappropriate to be caught by these filters so a human can choose whether they get sent to all subscribers or not.
@@ -73,7 +73,7 @@ For example, as an anti-spam measure, many lists only accept messages from their
 	FIXME
 Put a link to the relevant section here
 
-How do I moderate messages?
+我如何中度消息?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 For each message displayed in the queue, Mailman will give a summary of the message. This includes the following:
@@ -97,72 +97,73 @@ Discard
 This discards the message, ensuring that it is not sent to the list. In this case, no message is sent to the sender. This option is most often used for spam messages.
 In addition, there is a checkbox (near the submit button) which allows you to "Discard all messages marked Defer" – this allows you to bulk-discard spam messages and can be a very handy option. It only applies to the messages displayed in the queue page as you've loaded it.
 
-Why do I have to authorize subscriptions/unsubscriptions?
+为什么我要授权订阅/退订?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This is a setting chosen when the list was set up. If you do not wish to moderate subscription/unsubscription requests, you can change your list config.
 
-	FIXME
+ FIXME
+
 Put a link to the relevant section here
 
-How do I handle subscriptions/unsubscriptions
+我该如何处理订阅/退订
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The interface for moderating members joining and leaving is similar to that for messages, only instead of a message summary we have the email address and name of the person under consideration.
 
 The options for subscriptions and unsubscriptions are the same as those for messages:
 
-Defer
-Decide later.
-Accept
-Allow this person to subscribe or unsubscribe
-Reject
-Reject this person's request, letting them know and optionally giving them a reason for the rejection.
-Discard
-Discard this person's request silently, dropping it from the queue without notifying the person.
+* Defer
+ Decide later.
+* Accept
+ Allow this person to subscribe or unsubscribe
+* Reject
+ Reject this person's request, letting them know and optionally giving them a reason for the rejection.
+* Discard
+ Discard this person's request silently, dropping it from the queue without notifying the person.
 
-Configuration
+配置
 ------------------------
 
-General Options
+通用选项
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 General List Personality
 
-Passwords
+密码
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Language options
+语言设置
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Membership Management...
+会员管理
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Non-digest options
+非消化选项
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Digest options
+精华选项
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Privacy options...
+隐私选项
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Bounce processing
+弹跳处理
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Archiving Options
+归档选项
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Mail<->News gateways
+邮件<->新闻网关
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Auto-responder
+自动应答
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Content filtering
+内容过滤
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Deleting the Mailing List
+删除邮件列表
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Removing/deleting mailing lists is performed with the command line tool rmlist. rmlist has 2 modes of operating:
@@ -182,6 +183,6 @@ Once a list has been removed, it may be re-added with the newlist command line t
 
 It is also possible to allow mailing list removal with the option/variable OWNERS_CAN_DELETE_THEIR_OWN_LISTS in mm_cfg.py, by default this option is disabled.
 
-Topics
+主题
 ^^^^^^^^^^^^^^^^^^^^^^^
 

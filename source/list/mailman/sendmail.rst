@@ -1,4 +1,4 @@
-于sendmail集成
+集成sendmail
 ===================
 
 方法1
@@ -7,7 +7,9 @@
 This method uses the mm-handler.
 See also Method 2 which does not use the mm-handler
 
-Assumption
+假设
+^^^^^^^^^^^^
+
 The following has been tested using the following configuration
 
 Mailman 2.1.9
@@ -15,24 +17,27 @@ Sendmail 8.13.1
 CentOS release 4.5 (Final)
 Attached mm-handler (most noticeable change is writing logs to syslog)
 You are going to be using the server only for mailing lists and not for delivery to local addresses
-Method
+
+方法
+^^^^^^^^^^
+
 For the purpose of this document the server domain shall be called mailman.foo.com and it is a 'A' name entry in the DNS. 
 
- virtusertable
- add the following in your /etc/mail/virtusertable 
+virtusertable
+###################
+
+add the following in your /etc/mail/virtusertable 
 
 	virtusertable
+
 root@mailman.foo.bar    admin@foo.bar 
+
 this shall redirect any email to root on the server to be redirected to the email admin on the mail server. 
 
 
+local.m4
+###################
 
-
-
-
-
-
- local.m4
 local mailer is used by sendmail to deliver mails; however since we are not using the server to host any emails we don't need it.  We can change it to pass all the mails to mm-handler. Edit /usr/share/sendmail-cf/mailer/local.m4 
 
 	local.m4
@@ -45,21 +50,27 @@ and replace it with
 Mlocal,    P=/etc/mail/mm-handler, F=rDFMhlqSu, S=EnvFromL, R=EnvToL/HdrToL,
              T=DNS/RFC822/X-Unix, U=mailman:mail,
              A=mm-handler $h -j $j -d $u
-	Warning
-Make sure that there is a tab after Mlocal, and not spaces.  Otherwise it might not work
-	Warning
-This Mlocal is modified so that sendmail passes the hostname using -j parameter.  Also a -d parameter has been added before $u.
+.. Warning:: Make sure that there is a tab after Mlocal, and not spaces.  Otherwise it might not work
+
+.. Warning:: This Mlocal is modified so that sendmail passes the hostname using -j parameter.  Also a -d parameter has been added before $u.
+
 This assumes that mm-handler is installed in /etc/mail/mm-handler.  You change it to the location where mm-handler is installed/copied.
+
 U=mailman:mail shall run mm-handler as user:mailman, group:mail.  Change it to one that your mailman installation expects.
- mm-handler
+
+mm-handler
+###################
+
 Copy the file into /etc/mail/ directory (or where ever your installation of sendmail is).
 
 	
 Make sure that the path in your local.m4 is the same as the one where you are copying the mm-handler file
 chmod ug+x mm-handler
+
 This shall make the script executable by user and group. 
 
 chown root:mail mm-handler&nbsp;This changes the group to mail.  However you should make it that specified in local.m4.
+
 Now edit mm-hanlder and make sure that.
 
 perl path is correct.
@@ -91,22 +102,30 @@ This method uses a 'Postfix' workaround.
 
 See also Integrating Mailman with Sendmail - Method 1 which uses mm-handler.
 
- Introduction
+介绍
+^^^^^^^^^^^^^
+
 To be read in conjunction with the mailman installation instructions at
 <http://www.list.org/mailman-install/index.html>
 and the post by Ed Greenberg at
 <http://mail.python.org/pipermail/mailman-users/2004-June/037518.html>
 
-Step 1 - Installation requirements
+步骤1 - Installation requirements
+#############################################
+
 I'm using Apache2, Mailman 2.19 and FreeBSD4 and Python 2.4
 
-Step 2 - Set Up Your System
+步骤2 - Set Up Your System
+#############################################
+
 As root
 
 #adduser
 I used -> user: mailman, group:mailman, password: n
 
-Step 3 - Build and Install Mailman
+步骤3 - Build and Install Mailman
+#############################################
+
 create Installation Directory (as root)
 
 su# cd /usr/local/
@@ -147,10 +166,14 @@ su# grep "User " /usr/local/apache2/conf/httpd.conf
 su# cd archives
 su# chown nobody private
 su# chmod o-x private
-Step 4 - Check your installation
+步骤4 - Check your installation
+#############################################
+
 su# cd /usr/local/mailman
 su# bin/check_perms \-f
-Step 5 - Set up your webserver
+步骤5 - Set up your webserver
+#############################################
+
 Add this to your httpd-vhosts.conf, or httpd.conf depending on which 
 version of Apache you are using
 
@@ -163,7 +186,9 @@ Alias&nbsp;&nbsp; /pipermail/ /usr/local/mailman/archives/public/
 </VirtualHost>
 and restart apache
 
-Step 6 - Integrating sendmail and mailman
+步骤6 - Integrating sendmail and mailman
+#############################################
+
 Integrating sendmail and mailman
 
 mm-handler would not work for me (after considerable amount of time trying) - I think because by server was medicine.net.au and the address I wanted to use was practiceimprovement.org.au, even though practiceimprovement.org.au was correctly set up on dns to be delegated to the right server.
@@ -206,7 +231,9 @@ Also, if you have
 Defaults requiretty
 in the sudoers file, you need to remove or comment it.
 
-Step 7 - Review your site defaults
+步骤7 - Review your site defaults
+#############################################
+
 my mm_cfg.py has these added
 
 DEFAULT_EMAIL_HOST = 'practiceimprovement.com.au'
@@ -218,13 +245,16 @@ MTA='Postfix'
 POSTFIX_ALIAS_CMD = '/usr/local/bin/sudo /usr/local/sbin/
 mailman.aliases'
 POSTFIX_STYLE_VIRTUAL_DOMAINS = \[\]
+
 Steps 8 - 15 
+#############################################
 
-
-Follow the rest of the instructions from step 8 on at ->
+Follow the rest of the instructions from 步骤8 on at ->
 <http://www.gnu.org/software/mailman/mailman-install/index.html>
 
-Testing
+测试
+^^^^^^^^^^^^^
+
 When you create a list using /bin/newlist, you should find that the file /etc/mail/mailman.aliases has been created / updated.
 (I had some permissions to sort out in a few directories before it all worked smoothly)
 The error log is helpful at /usr/local/mailman/logs/error

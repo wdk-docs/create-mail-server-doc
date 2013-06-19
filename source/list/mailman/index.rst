@@ -8,5 +8,4 @@ mailman手册
    member
    administrators
    site
-   sendmail
-   postfix
+
